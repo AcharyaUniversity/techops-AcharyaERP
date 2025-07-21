@@ -140,10 +140,6 @@ function FacultytimetableDeptwiseIndex() {
       field: "program_specialization_short_name",
       headerName: "Specialization",
       flex: 1,
-      valueGetter: (value, row) =>
-        row.program_specialization_short_name
-          ? row.program_specialization_short_name + "-" + row.program_short_name
-          : "NA",
     },
     {
       field: "",
@@ -262,7 +258,7 @@ function FacultytimetableDeptwiseIndex() {
             onClick={() => handleStudentListForBatch(params)}
             color="primary"
           >
-            {params.row.batch_name ? params.row.batch_name : "NA"}
+            {params.row.batch_name ? params.row.concat_batch_name : "NA"}
           </Typography>
         );
       },

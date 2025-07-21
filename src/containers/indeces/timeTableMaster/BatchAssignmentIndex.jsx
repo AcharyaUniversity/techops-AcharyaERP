@@ -87,15 +87,13 @@ function BatchAssignmentIndex() {
       headerName: "Specialization",
       flex: 1,
     },
-    { field: "batch_short_name", headerName: "Batch", flex: 1 },
+    { field: "batch_name", headerName: "Batch", flex: 1 },
     {
       field: "current_year",
       headerName: "Year/Sem",
       flex: 1,
       valueGetter: (value, row) =>
-        row.current_sem
-          ? row.current_sem
-          : row.current_year,
+        row.current_sem ? row.current_sem : row.current_year,
     },
     { field: "interval_type_short", headerName: "Interval Type", flex: 1 },
     { field: "created_username", headerName: "Created By", flex: 1 },
@@ -104,7 +102,7 @@ function BatchAssignmentIndex() {
       field: "created_date",
       headerName: "Created Date",
       flex: 1,
-       valueGetter: (value, row) =>
+      valueGetter: (value, row) =>
         moment(row.created_date).format("DD-MM-YYYY"),
     },
 
@@ -285,7 +283,7 @@ function BatchAssignmentIndex() {
   };
 
   useEffect(() => {
-    getAcYear()
+    getAcYear();
     getSchoolData();
   }, []);
 
@@ -324,9 +322,12 @@ function BatchAssignmentIndex() {
     ) {
       await axios
         .get(
-          `/api/academic/fetchUnAssignedStudentDetailsOfSchool?ac_year_id=${values.acYearId
-          }&school_id=${values.schoolId}&program_specialization_id=${values.programSpeIdOne
-          }&program_id=${programId}&current_year_sem=${rowData.current_year ? rowData.current_year : rowData.current_sem
+          `/api/academic/fetchUnAssignedStudentDetailsOfSchool?ac_year_id=${
+            values.acYearId
+          }&school_id=${values.schoolId}&program_specialization_id=${
+            values.programSpeIdOne
+          }&program_id=${programId}&current_year_sem=${
+            rowData.current_year ? rowData.current_year : rowData.current_sem
           }&program_assignment_id=${programAssigmentId}`
         )
         .then((res) => {
@@ -346,10 +347,14 @@ function BatchAssignmentIndex() {
     ) {
       await axios
         .get(
-          `/api/academic/fetchUnAssignedStudentDetailsOfSchool?ac_year_id=${values.acYearId
-          }&school_id=${values.schoolId}&student_ids=${rowData?.student_ids
-          }&program_specialization_id=${values.programSpeIdOne
-          }&program_id=${programId}&current_year_sem=${rowData.current_year ? rowData.current_year : rowData.current_sem
+          `/api/academic/fetchUnAssignedStudentDetailsOfSchool?ac_year_id=${
+            values.acYearId
+          }&school_id=${values.schoolId}&student_ids=${
+            rowData?.student_ids
+          }&program_specialization_id=${
+            values.programSpeIdOne
+          }&program_id=${programId}&current_year_sem=${
+            rowData.current_year ? rowData.current_year : rowData.current_sem
           }&program_assignment_id=${programAssigmentId}`
         )
         .then((res) => {
@@ -401,7 +406,6 @@ function BatchAssignmentIndex() {
       [name]: newValue,
       ...(name === "school_Id" && { yearSem: "", programId: "" }),
     }));
-
   };
   const getSchoolNameOptions = async () => {
     await axios
@@ -451,12 +455,18 @@ function BatchAssignmentIndex() {
   // };
   const getData = async () => {
     if (filterValues?.acYearId) {
-      const programInfo = programOptions?.find((obj) => obj?.value == filterValues.programId)
+      const programInfo = programOptions?.find(
+        (obj) => obj?.value == filterValues.programId
+      );
       try {
         const temp = {
           ac_year_id: filterValues.acYearId,
-          ...(filterValues.programId && { program_id: programInfo?.program_id }),
-          ...(filterValues.programId && { program_specialization_id: filterValues.programId }),
+          ...(filterValues.programId && {
+            program_id: programInfo?.program_id,
+          }),
+          ...(filterValues.programId && {
+            program_specialization_id: filterValues.programId,
+          }),
           ...(filterValues.school_Id && { school_id: filterValues.school_Id }),
           page: 0,
           page_size: 100000,
@@ -473,7 +483,9 @@ function BatchAssignmentIndex() {
         const mainData = data?.map((obj) =>
           obj.id === null ? { ...obj, id: obj.time_table_id } : obj
         );
-        const uniqueData = Array.from(new Map(mainData?.map(item => [item.id, item])).values());
+        const uniqueData = Array.from(
+          new Map(mainData?.map((item) => [item.id, item])).values()
+        );
         setRows(uniqueData);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -603,8 +615,8 @@ function BatchAssignmentIndex() {
       rowData.student_ids && studentsIds.length === 0
         ? rowData.student_ids
         : rowData.student_ids && studentsIds.length > 0
-          ? rowData.student_ids + "," + studentsIds?.toString()
-          : studentsIds?.toString();
+        ? rowData.student_ids + "," + studentsIds?.toString()
+        : studentsIds?.toString();
     temp.batch_type = rowData.batch_type;
     temp.batch_master_id = rowData.batch_master_id;
     temp.guest_uesr_ids = rowData.guest_uesr_ids
@@ -666,21 +678,21 @@ function BatchAssignmentIndex() {
     };
     params.row.active === true
       ? setModalContent({
-        title: "Deactivate",
-        message: "Do you want to make it Inactive?",
-        buttons: [
-          { name: "Yes", color: "primary", func: handleToggle },
-          { name: "No", color: "primary", func: () => { } },
-        ],
-      })
+          title: "Deactivate",
+          message: "Do you want to make it Inactive?",
+          buttons: [
+            { name: "Yes", color: "primary", func: handleToggle },
+            { name: "No", color: "primary", func: () => {} },
+          ],
+        })
       : setModalContent({
-        title: "",
-        message: "Do you want to make it Active?",
-        buttons: [
-          { name: "Yes", color: "primary", func: handleToggle },
-          { name: "No", color: "primary", func: () => { } },
-        ],
-      });
+          title: "",
+          message: "Do you want to make it Active?",
+          buttons: [
+            { name: "Yes", color: "primary", func: handleToggle },
+            { name: "No", color: "primary", func: () => {} },
+          ],
+        });
     setModalOpen(true);
   };
 
@@ -733,9 +745,7 @@ function BatchAssignmentIndex() {
       headerName: "Year/Sem",
       flex: 1,
       valueGetter: (value, row) =>
-        row.current_year
-          ? row.current_year + "/" + row.current_sem
-          : "NA",
+        row.current_year ? row.current_year + "/" + row.current_sem : "NA",
     },
     {
       field: "eligible_reported_status",
