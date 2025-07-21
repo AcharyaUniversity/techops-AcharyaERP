@@ -158,8 +158,7 @@ function BatchAssignmentForm() {
       field: "current",
       headerName: "Year/Sem",
       flex: 1,
-      valueGetter: (value, row) =>
-        row.current_year + "/" + row.current_sem,
+      valueGetter: (value, row) => row.current_year + "/" + row.current_sem,
     },
     {
       field: "eligible_reported_status",
@@ -379,6 +378,9 @@ function BatchAssignmentForm() {
     );
     const selectedIds = [];
     const yearSem = [];
+
+    let programPatternDiffrence = false;
+
     specilizationSelected.forEach((obj) => {
       if (obj.program_type_name === firstSelectedProgram.program_type_name) {
         selectedIds.push(obj.value);
@@ -389,8 +391,11 @@ function BatchAssignmentForm() {
           message: "Program pattern cannot be different",
         });
         setAlertOpen(true);
+        programPatternDiffrence = true;
       }
     });
+
+    if (programPatternDiffrence) return;
 
     specilizationSelected.forEach((obj) => {
       if (obj.program_type_name.toLowerCase() === "yearly") {
