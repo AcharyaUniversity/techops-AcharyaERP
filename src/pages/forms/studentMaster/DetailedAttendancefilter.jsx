@@ -151,27 +151,35 @@ function DetailedAttendancefilter() {
         return;
       }
       const classDates = [];
-      Object.keys(responseData).forEach((obj) => {
-        const timeTableIds = [];
-        responseData[obj].forEach((item) => {
-          if (!timeTableIds.includes(item.time_table_id)) {
-            timeTableIds.push(item.time_table_id);
+      for (const date in responseData) {
+        const seen = new Set();
+        for (const item of responseData[date]) {
+          const ttId = item.time_table_id;
+          const sectionId = item.section_id ?? item.batch_id;
+
+          if (!seen.has(ttId)) {
+            seen.add(ttId);
+            classDates.push({ date, id: ttId, sectionId });
           }
-        });
-        timeTableIds.forEach((tt) => {
-          classDates.push({ date: obj, id: tt });
-        });
-      });
+        }
+      }
       const sortedDates = classDates.sort((a, b) => {
         const dateA = new Date(a.date.split("-").reverse().join("-"));
         const dateB = new Date(b.date.split("-").reverse().join("-"));
         return dateA - dateB;
       });
       const rowData = Object.values(responseData).flat();
-      const studentData = rowData.filter(
+      const studentDataUnsorted = rowData.filter(
         (item, index, self) =>
           index === self.findIndex((t) => t.student_id === item.student_id)
       );
+      const studentData = studentDataUnsorted.sort((a, b) => {
+        const nameA = a.section_name ? a.section_name : a.batch_name;
+        const nameB = b.section_name ? b.section_name : b.batch_name;
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
       const displayData = {};
       const stdPresentCount = {};
       studentData.forEach((std) => {
@@ -193,11 +201,17 @@ function DetailedAttendancefilter() {
             stdPresentCount[stdId] = { count };
           }
         });
+        const totalClass = sortedDates.filter((date) =>
+          std.section_id
+            ? date.sectionId === std.section_id
+            : date.sectionId === std.batch_id
+        );
         let percentage =
-          (stdPresentCount[stdId].count / sortedDates.length) * 100;
+          (stdPresentCount[stdId].count / totalClass.length) * 100;
         percentage =
           percentage % 1 === 0 ? percentage : parseFloat(percentage.toFixed(2));
         stdPresentCount[stdId]["percentage"] = percentage;
+        stdPresentCount[stdId]["total_class"] = totalClass.length;
       });
       const totalCount = {};
       const timeSlots = {};

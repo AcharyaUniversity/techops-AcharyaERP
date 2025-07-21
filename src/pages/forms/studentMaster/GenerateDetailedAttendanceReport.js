@@ -114,7 +114,7 @@ export const GenerateDetailedAttendanceReport = async (
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={3}
+              width={2}
             />
             <CustomCell
               label="AUID"
@@ -128,17 +128,24 @@ export const GenerateDetailedAttendanceReport = async (
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={6}
+              width={4}
             />
             <CustomCell
               label="Student Name"
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={12}
+              width={11}
             />
             <CustomCell
               label="DOR"
+              borderRight={0.5}
+              borderBottom={0.5}
+              fontFamily="Times-Bold"
+              width={5}
+            />
+            <CustomCell
+              label="Section/Batch"
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
@@ -166,7 +173,7 @@ export const GenerateDetailedAttendanceReport = async (
                   borderRight={0.5}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={3}
+                  width={2}
                 />
                 <CustomCell
                   label={obj.auid}
@@ -180,14 +187,14 @@ export const GenerateDetailedAttendanceReport = async (
                   borderRight={0.5}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={6}
+                  width={4}
                 />
                 <CustomCell
                   label={obj.student_name.toLowerCase()}
                   borderRight={0.5}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={12}
+                  width={11}
                   align="left"
                 />
                 <CustomCell
@@ -200,6 +207,14 @@ export const GenerateDetailedAttendanceReport = async (
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
                   width={5}
+                />
+                <CustomCell
+                  label={obj.section_name ? obj.section_name : obj.batch_name}
+                  borderRight={0.5}
+                  borderBottom={0.5}
+                  fontFamily="Times-Roman"
+                  width={5}
+                  align="left"
                 />
                 {columns.map((item, j) => (
                   <CustomCell
@@ -231,7 +246,7 @@ export const GenerateDetailedAttendanceReport = async (
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={33}
+              width={34}
               align="left"
             />
             {columns.map((obj, i) => (
@@ -251,7 +266,7 @@ export const GenerateDetailedAttendanceReport = async (
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={33}
+              width={34}
               align="left"
             />
             {columns.map((obj, i) => (
@@ -274,7 +289,7 @@ export const GenerateDetailedAttendanceReport = async (
                   borderBottomWidth: i === signatureList.length - 1 ? 0 : 0.5,
                   borderColor: "#000",
                   fontFamily: "Times-Bold",
-                  width: "33%",
+                  width: "34%",
                   textAlign: "left",
                   textTransform: "capitalize",
                 }}
@@ -345,25 +360,32 @@ export const GenerateDetailedAttendanceReport = async (
               width={5}
             />
             <CustomCell
+              label="Section/Batch"
+              borderRight={0.5}
+              borderBottom={0.5}
+              fontFamily="Times-Bold"
+              width={10}
+            />
+            <CustomCell
               label="Present Count"
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={22}
+              width={19}
             />
             <CustomCell
               label="Class Count"
               borderRight={0.5}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={22}
+              width={19}
             />
             <CustomCell
               label="Percentage"
               borderRight={0}
               borderBottom={0.5}
               fontFamily="Times-Bold"
-              width={22}
+              width={19}
             />
           </CustomRow>
           {rows.map((obj, i) => {
@@ -410,25 +432,33 @@ export const GenerateDetailedAttendanceReport = async (
                   width={5}
                 />
                 <CustomCell
+                  label={obj.section_name ? obj.section_name : obj.batch_name}
+                  borderRight={0.5}
+                  borderBottom={0.5}
+                  fontFamily="Times-Roman"
+                  width={10}
+                  align="left"
+                />
+                <CustomCell
                   label={data.stdPresentCount[obj.student_id].count}
                   borderRight={0.5}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={22}
+                  width={19}
                 />
                 <CustomCell
-                  label={data.sortedDates.length}
+                  label={data.stdPresentCount[obj.student_id].total_class}
                   borderRight={0.5}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={22}
+                  width={19}
                 />
                 <CustomCell
                   label={`${data.stdPresentCount[obj.student_id].percentage}%`}
                   borderRight={0}
                   borderBottom={0.5}
                   fontFamily="Times-Roman"
-                  width={22}
+                  width={19}
                 />
               </CustomRow>
             );
@@ -493,12 +523,7 @@ export const GenerateDetailedAttendanceReport = async (
       </View>
       <View style={styles.subjectSection}>
         <View style={styles.cellWidth}>
-          <View style={styles.subjectRow}>
-            <Text style={styles.boldText}>Section -</Text>
-            <Text style={{ fontFamily: "Times-Roman" }}>
-              {data.studentData[0].section_name}
-            </Text>
-          </View>
+          <View style={styles.subjectRow}></View>
         </View>
 
         <View style={[styles.cellWidth, styles.centerAlign]}>
