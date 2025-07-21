@@ -19,7 +19,7 @@ import { useLocation } from "react-router-dom";
 import FormPaperWrapper from "../../../components/FormPaperWrapper";
 import InternalAttendanceEntry from "./InternalAttendanceEntry";
 import useAlert from "../../../hooks/useAlert";
-import InternalAttendanceReport from "./InternalAttendanceReport";
+import InternalTimeTableAttendanceReport from "./../../masters/InternalTimeTableAttendanceReport";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -114,7 +114,7 @@ function InternalAssesmentAttendance() {
           </Grid>
           <Grid item xs={12}>
             {attendanceTaken ? (
-              <InternalAttendanceReport eventDetails={eventDetails} />
+              <InternalTimeTableAttendanceReport eventDetails={eventDetails} />
             ) : (
               <InternalAttendanceEntry
                 eventDetails={eventDetails}
