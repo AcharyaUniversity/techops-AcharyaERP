@@ -70,6 +70,8 @@ function StudentProctorIndex() {
   const [modalIVROpen, setModalIVROpen] = useState(false);
   const [modalMailOpen, setModalMailOpen] = useState(false);
   const [mailData, setMailData] = useState([]);
+  const [modalWhatsAppOpen, setModalWhatsAppOpen] = useState(false);
+  const [whatsAppData, setWhatsAppData] = useState([]);
   const [studentIds, setStudentIds] = useState([]);
   const [data, setData] = useState({});
   const [studentDetailsOptions, setStudentDetailsOptions] = useState([]);
@@ -280,6 +282,12 @@ function StudentProctorIndex() {
     setModalMailOpen(true)
     setMailData(params?.row)
   };
+
+  const handleWhatsAppMessage = (params) => {
+    setModalWhatsAppOpen(true)
+    setWhatsAppData(params?.row)
+  };
+
   const handleIVR = async (type) => {
     // setAlertMessage({ severity: "error", message: "This service is temporarily disabled" });
     // setAlertOpen(true);
@@ -443,7 +451,7 @@ function StudentProctorIndex() {
       field: "emailHistory",
       type: "actions",
       flex: 1,
-      headerName: "Email History",
+      headerName: "Email/WhatsApp History",
       getActions: (params) => [
         <IconButton label="History" onClick={() => handleHistoryEmail(params)}>
           <HistoryIcon sx={{ color: "black" }} />
@@ -486,7 +494,7 @@ function StudentProctorIndex() {
       getActions: (params) => [
         <IconButton
           label="WhatsApp"
-          onClick={() => ""}
+          onClick={() => handleWhatsAppMessage(params)}
         >
           <WhatsAppIcon sx={{ color: "green" }} />
         </IconButton>
@@ -725,7 +733,89 @@ function StudentProctorIndex() {
           setAlertOpen(true);
         });
     }
+    setValues(initialValues);
   };
+
+  const handleWhatsAppCreate = async () => {
+    console.log(values, "values");
+    console.log(whatsAppData, "WhatsAppData");
+
+
+    if (!requiredFieldsValid()) {
+      setAlertMessage({
+        severity: "error",
+        message: "Please fill all required fields",
+      });
+      setAlertOpen(true);
+    } else {
+      setLoading(true);
+
+      await axios
+        .post(
+          `/api/proctor/sendWhatsAppMessageForMeeting/${whatsAppData.student_id
+          }/${userId}/${values.meetingAgenda}/${values.description}/${moment(
+            values.meetingDate
+          ).format("DD-MM-YYYY")}`
+        )
+        .then(async (res) => {
+          if (res.status === 200 || res.status === 201) {
+            const temp = {};
+            temp.active = true;
+            temp.school_id = 1;
+            temp.user_id = userId;
+            temp.date_of_meeting = values.meetingDate
+              ? values.meetingDate.substr(0, 19) + "Z"
+              : "";
+            temp.meeting_agenda = values.meetingAgenda;
+            temp.student_ids = [whatsAppData.student_id];
+            temp.description = values.description;
+            temp.meeting_type = "Mentor To Student";
+            temp.mode_of_contact = "WhatsApp";
+
+            await axios
+              .post(`/api/proctor/saveProctorStudentMeeting`, temp)
+              .then((res) => {
+              })
+              .catch((err) => {
+                setLoading(false);
+                setAlertMessage({
+                  severity: "error",
+                  message: err.response
+                    ? err.response.data.message
+                    : "An error occured",
+                });
+                setAlertOpen(true);
+              });
+
+            setLoading(false);
+            setAlertMessage({
+              severity: "success",
+              message: "WhatsApp message sent successfully",
+            });
+            getData();
+            setModalWhatsAppOpen(false)
+          } else {
+            setAlertMessage({
+              severity: "error",
+              message: res.data ? res.data.message : "An error occured",
+            });
+          }
+          setAlertOpen(true);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setAlertMessage({
+            severity: "error",
+            message: err.response
+              ? err.response.data.message
+              : "An error occured",
+          });
+          setAlertOpen(true);
+        });
+    }
+    setValues(initialValues);
+  };
+
   const handleCreateCall = async () => {
     if (!values?.minutesOfMeeting) {
       setAlertMessage({
@@ -1166,6 +1256,113 @@ function StudentProctorIndex() {
             </Grid>
           </Grid>
         </ModalWrapper>
+
+         <ModalWrapper
+          title={`WhatsApp`}
+          maxWidth={800}
+          open={modalWhatsAppOpen}
+          setOpen={setModalWhatsAppOpen}
+        >
+          <Grid
+            container
+            justifyContent="flex-start"
+            alignItems="center"
+            rowSpacing={2}
+            columnSpacing={2}
+          >
+            <Grid item xs={12} md={4}>
+              <CustomSelect
+                multiline
+                name="meetingAgenda"
+                label="Agenda of meeting"
+                value={values.meetingAgenda}
+                handleChange={handleChangeOne}
+                items={[
+                  {
+                    label: "IA marks review",
+                    value: "IA marks review",
+                  },
+                  {
+                    label: "Attendence review",
+                    value: "Attendence review",
+                  },
+                  {
+                    label: "Discipline matter",
+                    value: "Discipline matter",
+                  },
+                  {
+                    label: "Academic Issues",
+                    value: "Academic Issues",
+                  },
+                  {
+                    label: "Leave Issues",
+                    value: "Leave Issues",
+                  },
+                  {
+                    label: "Fee due",
+                    value: "Fee due",
+                  },
+                  {
+                    label: "Monthly meeting",
+                    value: "Monthly meeting",
+                  },
+                  {
+                    label: "Others",
+                    value: "Others",
+                  },
+                ]}
+                checks={checks.meetingAgenda}
+                errors={errorMessages.meetingAgenda}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <CustomTextField
+                multiline
+                rows={2}
+                name="description"
+                label="Description"
+                value={values.description}
+                handleChange={handleChangeOne}
+                checks={checks.description}
+                errors={errorMessages.description}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={4} mt={2.4}>
+              <CustomDatePicker
+                name="meetingDate"
+                label="Date of Meeting"
+                value={values.meetingDate}
+                handleChangeAdvance={handleChangeAdvance}
+                disablePast
+                required
+              />
+            </Grid>
+
+
+            <Grid item xs={12} align="right">
+              <Button
+                variant="contained"
+                onClick={() => handleWhatsAppCreate()}
+                sx={{ borderRadius: 2 }}
+                disabled={loading}
+                endIcon={<WhatsAppIcon />}
+              >
+                {loading ? (
+                  <CircularProgress
+                    size={25}
+                    color="blue"
+                    style={{ margin: "2px 13px" }}
+                  />
+                ) : (
+                  <strong>{"Send"}</strong>
+                )}
+              </Button>
+            </Grid>
+          </Grid>
+        </ModalWrapper>
+
         <ModalWrapper
           title="Call Summarize"
           maxWidth={800}
