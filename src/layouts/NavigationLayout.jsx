@@ -162,20 +162,20 @@ function NavigationLayout() {
       });
   }, [location, modules, accesiblePaths]);
 
-  // useEffect(() => {
-  //   const allowedPaths = ["/Dashboard", "/", "/Login"];
-  //   // If the current path is in allowedPaths, skip the referrer check
-  //   if (allowedPaths.includes(location.pathname)) {
-  //     return;
-  //   }
-  //   const referrer = document.referrer;
-  //   if (!referrer) {
-  //     sessionStorage.setItem("AcharyaErpUser", null);
-  //     sessionStorage.setItem("empId", null);
-  //     sessionStorage.setItem("usertype", null);
-  //     navigate("/Login");
-  //   }
-  // }, [navigate, location.pathname]);
+  useEffect(() => {
+    const allowedPaths = ["/Dashboard", "/", "/Login"];
+    // If the current path is in allowedPaths, skip the referrer check
+    if (allowedPaths.includes(location.pathname)) {
+      return;
+    }
+    const referrer = document.referrer;
+    if (!referrer) {
+      sessionStorage.setItem("AcharyaErpUser", null);
+      sessionStorage.setItem("empId", null);
+      sessionStorage.setItem("usertype", null);
+      navigate("/Login");
+    }
+  }, [navigate, location.pathname]);
 
   const getSubMenuFromUser = () => {
     return new Promise(async (resolve, reject) => {
@@ -186,7 +186,16 @@ function NavigationLayout() {
           );
           resolve(subMenusFromUser ? subMenusFromUser.toString() : "");
         })
-        .catch((err) => reject(err));
+        .catch((err) => {
+           const statusCode = err.response?.status;
+            if (statusCode === 401) {
+                sessionStorage.setItem("AcharyaErpUser", null);
+                sessionStorage.setItem("empId", null);
+                sessionStorage.setItem("usertype", null);
+                navigate("/Login");
+            }
+              reject(err);
+        });
     });
   };
   const getRoleIds = async () => {
@@ -196,7 +205,17 @@ function NavigationLayout() {
           const roleIds = res.data.data.map((obj) => obj.role_id);
           resolve(roleIds.length > 0 ? roleIds.toString() : 0);
         })
-        .catch((err) => reject(err));
+        .catch((err) => {
+          const statusCode = err.response?.status;
+            if (statusCode === 401) {
+                sessionStorage.setItem("AcharyaErpUser", null);
+                sessionStorage.setItem("empId", null);
+                sessionStorage.setItem("usertype", null);
+                navigate("/Login");
+            }
+          
+          reject(err);
+        });
     });
   };
 
