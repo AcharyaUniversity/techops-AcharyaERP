@@ -17,6 +17,7 @@ import {
   Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import { Alert } from "@mui/material";
 import moment from "moment";
 import GridIndex from "../../components/GridIndex";
 import CustomSelect from "../../components/Inputs/CustomSelect";
@@ -35,6 +36,9 @@ const FacultyDetailsAttendanceReportView = () => {
   const [newStatus, setNewStatus] = useState("");
   const [updateModel, setUpdateModel] = useState(false);
   const [reportingIds, setReportingIds] = useState([]);
+  const [attendanceUpdateInfo, setAttendanceUpdateInfo] = useState("");
+  const [eligibleToUpdateAttendance, setEligibleToUpdateAttendance] =
+    useState(false);
   const setCrumbs = useBreadcrumbs();
 
   useEffect(() => {
@@ -45,6 +49,10 @@ const FacultyDetailsAttendanceReportView = () => {
       { name: "Attendance" },
     ]);
   }, []);
+
+  useEffect(() => {
+    attendanceUpdateEligibilityCheck();
+  }, [Data]);
 
   const getEmployeeData = async () => {};
 
@@ -118,6 +126,45 @@ const FacultyDetailsAttendanceReportView = () => {
       .catch((err) => console.error(err));
   };
 
+  const attendanceUpdateEligibilityCheck = () => {
+    if (Data.length > 0) {
+      //  Date object from attendance created timestamp
+      const attendanceCreatedTime = new Date(Data[0].created_date);
+      console.log(attendanceCreatedTime);
+      // Current Date object
+      const currentTime = new Date();
+
+      // 1. Calculate the difference in milliseconds
+      const diffInMilliseconds =
+        currentTime.getTime() - attendanceCreatedTime.getTime();
+
+      // 2. Calculate 48 hours in milliseconds (48 * 60 minutes * 60 seconds * 1000 ms)
+      const fortyEightHoursInMilliseconds = 48 * 60 * 60 * 1000;
+
+      // 3. Check if the difference is positive and less than 48 hours
+      const isLessThan48Hours =
+        diffInMilliseconds > 0 &&
+        diffInMilliseconds < fortyEightHoursInMilliseconds;
+
+      if (isLessThan48Hours) {
+        setEligibleToUpdateAttendance(true);
+        setAttendanceUpdateInfo(
+          "Attendance can only be updated within 48 hours of being marked."
+        );
+      } else {
+        setEligibleToUpdateAttendance(false);
+
+        setAttendanceUpdateInfo(
+          "The 48-hour period for modifying this attendance record has passed."
+        );
+      }
+
+      return isLessThan48Hours;
+    }
+
+    return false;
+  };
+
   const checkFullAccess = (id) => {
     //1-admin, 5-super admin, headHr-13, director-14, cprdsa-10, HR-4, accounts - 3
     // const roles = [1, 5, 13, 14, 10, 4, 3];
@@ -125,7 +172,10 @@ const FacultyDetailsAttendanceReportView = () => {
     const mergedArray = [...roles, ...reportingIds];
     const empID = sessionStorage.getItem("empId");
     const { roleId } = JSON.parse(sessionStorage.getItem("AcharyaErpUser"));
-    if (mergedArray?.includes(roleId) || empID == id) {
+    if (
+      mergedArray?.includes(roleId) ||
+      (empID == id && eligibleToUpdateAttendance)
+    ) {
       return true;
     } else {
       return false;
@@ -164,7 +214,7 @@ const FacultyDetailsAttendanceReportView = () => {
       renderCell: (params) => (
         <>
           <p>{params.row.present}</p>
-          {checkFullAccess() && (
+          {checkFullAccess(empId) && (
             <EditIcon
               onClick={() => handleEditClick(params.row, params.row.index)}
               sx={{ marginLeft: 3 }}
@@ -271,8 +321,14 @@ const FacultyDetailsAttendanceReportView = () => {
         </Table>
       </TableContainer>
 
+      {attendanceUpdateInfo && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {attendanceUpdateInfo}
+        </Alert>
+      )}
+
       <Box sx={{ display: "flex", justifyContent: "end" }}>
-        {checkFullAccess() && (
+        {checkFullAccess(empId) && (
           <Button
             variant="contained"
             color="success"
@@ -309,8 +365,8 @@ const FacultyDetailsAttendanceReportView = () => {
             name="present_status"
             value={newStatus}
             items={[
-              { label: "P", value: true },
-              { label: "A", value: false },
+              { label: "Present (P)", value: true },
+              { label: "Absent (A)", value: false },
             ]}
             handleChange={(e) => {
               setEditingStudent((prev) => ({
@@ -326,6 +382,7 @@ const FacultyDetailsAttendanceReportView = () => {
               color="primary"
               style={{ marginRight: 10 }}
               onClick={() => updateAttendance()}
+              disabled={typeof newStatus !== "boolean"}
             >
               Save
             </Button>
@@ -343,8 +400,8 @@ const FacultyDetailsAttendanceReportView = () => {
             name="present_status"
             value={newStatus}
             items={[
-              { label: "P", value: true },
-              { label: "A", value: false },
+              { label: "Present (P)", value: true },
+              { label: "Absent (A)", value: false },
             ]}
             handleChange={(e) => {
               setNewStatus(e.target.value);
@@ -356,6 +413,7 @@ const FacultyDetailsAttendanceReportView = () => {
               color="primary"
               style={{ marginRight: 10 }}
               onClick={() => updateAttendanceInBulk()}
+              disabled={typeof newStatus !== "boolean"}
             >
               Save
             </Button>

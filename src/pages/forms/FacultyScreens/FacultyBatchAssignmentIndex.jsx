@@ -85,15 +85,13 @@ function BatchAssignmentIndex() {
       headerName: "Specialization",
       flex: 1,
     },
-    { field: "batch_short_name", headerName: "Batch", flex: 1 },
+    { field: "batch_name", headerName: "Batch", flex: 1 },
     {
       field: "current_year",
       headerName: "Year/Sem",
       flex: 1,
       valueGetter: (value, row) =>
-        row.current_sem
-          ? row.current_sem
-          : row.current_year,
+        row.current_sem ? row.current_sem : row.current_year,
     },
     { field: "interval_type_short", headerName: "Interval Type", flex: 1 },
     { field: "created_username", headerName: "Created By", flex: 1 },
@@ -102,7 +100,7 @@ function BatchAssignmentIndex() {
       field: "created_date",
       headerName: "Created Date",
       flex: 1,
-       valueGetter: (value, row) =>
+      valueGetter: (value, row) =>
         moment(row.created_date).format("DD-MM-YYYY"),
     },
 
@@ -464,7 +462,7 @@ function BatchAssignmentIndex() {
     } else if (pathname.toLowerCase() === "/facultymaster/user/batch") {
       url = `/api/academic/fetchAllBatchAssignmentDetailsBasedOnSchoolAndCreatedBy?page=${0}&page_size=${100000}&sort=created_date&createdBy=${userID}`;
       setStatus("user");
-    }else if (pathname.toLowerCase() === "/facultymaster/dept/batch") {
+    } else if (pathname.toLowerCase() === "/facultymaster/dept/batch") {
       url = `/api/academic/fetchAllBatchAssignmentDetailsBasedOnSchoolAndCreatedBy?page=${0}&page_size=${100000}&sort=created_date&dept_id=${deptID}`;
       setStatus("");
     }
@@ -715,9 +713,7 @@ function BatchAssignmentIndex() {
       headerName: "Year/Sem",
       flex: 1,
       valueGetter: (value, row) =>
-        row.current_year
-          ? row.current_year + "/" + row.current_sem
-          : "NA",
+        row.current_year ? row.current_year + "/" + row.current_sem : "NA",
     },
     {
       field: "eligible_reported_status",

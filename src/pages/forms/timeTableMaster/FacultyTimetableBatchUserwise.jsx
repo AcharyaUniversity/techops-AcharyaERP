@@ -185,6 +185,7 @@ function FacultyTimetableBatchUserwise() {
     values.toDate,
     values.weekdayIdOne,
     values.timeSlotId,
+    values.batchId,
     weekdayId,
   ]);
 
@@ -324,16 +325,11 @@ function FacultyTimetableBatchUserwise() {
       values.fromDate &&
       values.toDate &&
       values.timeSlotId &&
+      values.batchId &&
       (values.weekDay || values.selectedWeekDay)
     )
       await axios
-        .get(
-          `/api/academic/getAllEmployeesForTimeTable/${moment(
-            values.fromDate
-          ).format("DD-MM-YYYY")}/${moment(values.toDate).format(
-            "DD-MM-YYYY"
-          )}/${values.timeSlotId}`
-        )
+        .get(`/api/academic/getEmployeesForBatchTimeTable/${values.batchId}`)
         .then((res) => {
           setEmployeeOptions(
             res.data.data.map((obj) => ({
@@ -454,7 +450,7 @@ function FacultyTimetableBatchUserwise() {
     if (values.employeeId.length > 0)
       await axios
         .get(
-          `/api/academic/fetchAllCourseDetailsForTimeTable/${values.employeeId}`
+          `/api/academic/fetchAllCourseDetailsForBatchTimeTable/${values.employeeId}/${values.batchId}`
         )
         .then((res) => {
           setCourseOptions(

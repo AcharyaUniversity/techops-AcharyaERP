@@ -344,7 +344,7 @@ function TimetableForSectionForm() {
     if (values.employeeIdOne)
       await axios
         .get(
-          `/api/academic/fetchAllCourseDetailsForTimeTable/${values.employeeIdOne}`
+          `/api/academic/fetchAllCourseDetailsForSectionTimeTable/${values.employeeIdOne}/${values.programSpeId}/${values.yearsemId}`
         )
         .then((res) => {
           setCourseOptions(
@@ -392,11 +392,7 @@ function TimetableForSectionForm() {
     )
       await axios
         .get(
-          `/api/academic/getAllEmployeesForTimeTable/${moment(
-            values.fromDate
-          ).format("DD-MM-YYYY")}/${moment(values.toDate).format(
-            "DD-MM-YYYY"
-          )}/${values.timeSlotId}`
+          `/api/academic/getEmployeesForSectionTimeTable/${values.programSpeId}/${values.yearsemId}`
         )
         .then((res) => {
           setEmployeeOptions(

@@ -117,7 +117,9 @@ function InternalMarksForm() {
       }
 
       const [response, marksRes] = await Promise.all([
-        axios.get(`/api/academic/getInternalAttendanceDetailsOfStudent/${id}`),
+        axios.get(
+          `/api/academic/getInternalAttendanceDetailsOfStudent/${id}/${empId}`
+        ),
         axios.get(
           `/api/student/getStudentMarkDetailsByInternalSessionId/${id}`
         ),

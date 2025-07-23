@@ -178,6 +178,9 @@ function DetailedAttendanceReport({ data, setLoading }) {
                     Student Name
                   </StyledTableCell>
                   <StyledTableCell sx={{ width: "7%" }}>DOR</StyledTableCell>
+                  <StyledTableCell sx={{ width: "7%" }}>
+                    Section/Batch
+                  </StyledTableCell>
                   {isDetailed ? (
                     sortedDates.map((_, i) => (
                       <StyledTableCell key={i}>{i + 1}</StyledTableCell>
@@ -225,6 +228,13 @@ function DetailedAttendanceReport({ data, setLoading }) {
                           }
                         />
                       </StyledTableCellBody>
+                      <StyledTableCellBody>
+                        <DisplayBody
+                          label={
+                            obj.section_name ? obj.section_name : obj.batch_name
+                          }
+                        />
+                      </StyledTableCellBody>
                       {isDetailed ? (
                         sortedDates.map((item, j) => (
                           <StyledTableCellBody key={j}>
@@ -233,7 +243,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
                               sx={{
                                 color:
                                   data.displayData[
-                                    `${item.date}-${item.id}-${obj.student_id}`
+                                    `${item.date}-${item.id}-${stdId}`
                                   ] === "A"
                                     ? "error.main"
                                     : "success.main",
@@ -250,7 +260,9 @@ function DetailedAttendanceReport({ data, setLoading }) {
                             <DisplayBody label={stdPresentCount[stdId].count} />
                           </StyledTableCellBody>
                           <StyledTableCellBody>
-                            <DisplayBody label={sortedDates.length} />
+                            <DisplayBody
+                              label={stdPresentCount[stdId].total_class}
+                            />
                           </StyledTableCellBody>
                           <StyledTableCellBody>
                             <DisplayBody
@@ -266,7 +278,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
                   <>
                     <StyledTableRow>
                       <StyledTableCellBody
-                        colSpan={5}
+                        colSpan={6}
                         sx={{ textAlign: "left !important" }}
                       >
                         <DisplayHeader label="Present Count/Total Count" />
@@ -282,7 +294,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
 
                     <StyledTableRow>
                       <StyledTableCellBody
-                        colSpan={5}
+                        colSpan={6}
                         sx={{ textAlign: "left !important" }}
                       >
                         <DisplayHeader label="Date" />
@@ -322,7 +334,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
                 )}
                 <StyledTableRow>
                   <StyledTableCellBody
-                    colSpan={isDetailed ? 5 : 8}
+                    colSpan={isDetailed ? 6 : 9}
                     sx={{ textAlign: "left !important" }}
                   >
                     <DisplayHeader label="Faculty Signature" />
@@ -334,7 +346,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
                 </StyledTableRow>
                 <StyledTableRow>
                   <StyledTableCellBody
-                    colSpan={isDetailed ? 5 : 8}
+                    colSpan={isDetailed ? 6 : 9}
                     sx={{ textAlign: "left !important" }}
                   >
                     <DisplayHeader label="HOD Signature" />
@@ -346,7 +358,7 @@ function DetailedAttendanceReport({ data, setLoading }) {
                 </StyledTableRow>
                 <StyledTableRow>
                   <StyledTableCellBody
-                    colSpan={isDetailed ? 5 : 8}
+                    colSpan={isDetailed ? 6 : 9}
                     sx={{ textAlign: "left !important" }}
                   >
                     <DisplayHeader label="Principal Signature" />

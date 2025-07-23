@@ -266,6 +266,8 @@ function ClassCommencementForm() {
     const yearSem = [];
     const newObject = {};
 
+    let programPatternDiffrence = false;
+
     selectedSpecialzations.forEach((obj) => {
       if (obj.program_type_name === firstSelectedProgram.program_type_name) {
         selectedIds.push(obj.value);
@@ -277,8 +279,11 @@ function ClassCommencementForm() {
           message: "Program pattern cannot be different",
         });
         setAlertOpen(true);
+        programPatternDiffrence = true;
       }
     });
+
+    if (programPatternDiffrence) return;
 
     selectedSpecialzations.forEach((obj) => {
       if (obj.program_type_name.toLowerCase() === "yearly") {
